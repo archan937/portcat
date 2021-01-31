@@ -51,7 +51,7 @@ Please note that you can run portcat as a daemon with `-d` or `--daemon`.
 The example above is equivalent to the following commands:
 
     ipAddress=$(docker inspect my-awesome-container | grep IPAddress | grep -o '[0-9]\{1,3\}\(\.[0-9]\{1,3\}\)\{3\}' | head -n 1)
-    docker run -p 3456:3456 -p 4444:8080 --name=alpine-portcat -it pmelegend/portcat:latest $ipAddress 3456 4444:8080
+    docker run -p 3456:3456 -p 4444:4444 --name=alpine-portcat -it pmelegend/portcat:latest $ipAddress 3456 4444:8080
 
 You can detach using Ctrl+P followed by Ctrl+Q.
 
