@@ -1,12 +1,12 @@
 #!/bin/bash
 
-TAG="portcat"
+IMAGE="pmelegend/portcat:latest"
 
-container=$(docker ps -a -q --filter ancestor=$TAG --format="{{.ID}}")
+container=$(docker ps -a -q --filter ancestor=$IMAGE --format="{{.ID}}")
 [ ! -z "$container" ] && docker rm $(docker stop $container)
 
-if [[ "$(docker images -q $TAG 2> /dev/null)" == "" ]]; then
-  docker image rm $TAG
+if [[ "$(docker images -q $IMAGE 2> /dev/null)" == "" ]]; then
+  docker image rm $IMAGE
 fi
 
-docker build -t $TAG .
+docker build -t $IMAGE .
