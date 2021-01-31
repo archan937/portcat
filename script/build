@@ -1,0 +1,12 @@
+#!/bin/bash
+
+TAG="portcat"
+
+container=$(docker ps -a -q --filter ancestor=$TAG --format="{{.ID}}")
+[ ! -z "$container" ] && docker rm $(docker stop $container)
+
+if [[ "$(docker images -q $TAG 2> /dev/null)" == "" ]]; then
+  docker image rm $TAG
+fi
+
+docker build -t $TAG .
