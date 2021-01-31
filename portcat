@@ -1,22 +1,70 @@
 #!/bin/bash
 
+DAEMON=0
+
+function usage() {
+  echo "Usage:"
+  echo ""
+  echo "  portcat [OPTION] TARGET PORT [...PORT]"
+  echo ""
+  echo "Options:"
+  echo "  --daemon, [-d]"
+  echo "  --help, [-h]"
+  echo ""
+  echo "Run portcat container to proxy traffic"
+}
+
+if [[ "$1" =~ ^- ]]; then
+  param=`echo $1 | awk -F= '{print $1}'`
+
+  case $param in
+    -h | --help)
+      usage
+      exit
+      ;;
+    -d | --daemon)
+      DAEMON=1
+      ;;
+    *)
+      echo "Unknown parameter \"$param\". Abort."
+      usage
+      exit 1
+      ;;
+  esac
+
+  shift
+fi
+
 IMAGE="pmelegend/portcat:latest"
 NAME="alpine-portcat"
 
 TARGET="$1"
 PORTS=${@:2}
 
-if [ ! -z "$TARGET" ]; then
+if [ ! -z "$TARGET" ] && [ ! -z "${PORTS}" ]; then
   container=$(docker ps -a -q --filter ancestor=$IMAGE --format="{{.ID}}")
   [ ! -z "$container" ] && docker rm $(docker stop $container)
-
   ipAddress=$(docker inspect $TARGET 2> /dev/null | grep IPAddress | grep -o '[0-9]\{1,3\}\(\.[0-9]\{1,3\}\)\{3\}' | head -n 1)
+
   if [ ! -z "$ipAddress" ]; then
+    daemon=""
     ports=""
+
+    if (($DAEMON)); then
+      daemon=" -d"
+    fi
+
     for port in ${PORTS[@]}; do
       from=$(echo "$port" | cut -d":" -f 1)
       ports="$ports -p $from:$from"
     done
-    exec docker run$ports --name=$NAME -it $IMAGE $ipAddress ${PORTS}
+
+    exec docker run$daemon$ports --name=$NAME -it $IMAGE $ipAddress ${PORTS}
+  else
+    echo "Not able to determine target IP address. Abort."
+    exit 1
   fi
+else
+  usage
+  exit 1
 fi

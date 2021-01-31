@@ -23,7 +23,20 @@ This script will install the executable `portcat` to `/usr/local/bin/portcat`.
 
 ## Usage
 
-### Using the `portcat` executable
+### Using the executable
+
+As portcat is a command-line-tool, for starters you can print its help instructions:
+
+    PME-Legend ~> portcat -h
+    Usage:
+
+      portcat [OPTION] TARGET PORT [...PORT]
+
+    Options:
+      --daemon, [-d]
+      --help, [-h]
+
+    Run portcat container to proxy traffic
 
 Pass both the name of the target container and the port mapping to enforce to `portcat`:
 
@@ -31,12 +44,16 @@ Pass both the name of the target container and the port mapping to enforce to `p
 
 That's it! The executable will create a container called `alpine-portcat` which relays the data transfers :)
 
+Please note that you can run portcat as a daemon with `-d` or `--daemon`.
+
 ### Setup portcat manually
 
 The example above is equivalent to the following commands:
 
     ipAddress=$(docker inspect my-awesome-container | grep IPAddress | grep -o '[0-9]\{1,3\}\(\.[0-9]\{1,3\}\)\{3\}' | head -n 1)
     docker run -p 3456:3456 -p 4444:8080 --name=alpine-portcat -it pmelegend/portcat:latest $ipAddress 3456 4444:8080
+
+You can detach using Ctrl+P followed by Ctrl+Q.
 
 ## Contact me
 
