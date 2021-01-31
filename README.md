@@ -2,6 +2,42 @@
 
 Alpine based Docker container with socat installed that can easily map multiple ports to another container
 
+## Introduction
+
+Changing the port mapping of an existing Docker container is not that easily done. After Googling around I found the suggestion
+to use `socat` in a separate container which then will relay data transfers between the host and the target container.
+
+Based on RobM's answer (see: [Exposing a port on a live Docker container](https://stackoverflow.com/a/42071577/1412607)) I have
+created an Alpine based Docker container with `socat` installed which expects the name of the target container and the port mapping to enforce.
+Along with a nifty Bash script I have made it easy to set it all up.
+
+Enter Portcat! :)
+
+## Installation (optional)
+
+Run the following command:
+
+    curl -sL https://raw.githubusercontent.com/archan937/portcat/master/script/install | sudo bash
+
+This script will install the executable `portcat` to `/usr/local/bin/portcat`.
+
+## Usage
+
+### Using the `portcat` executable
+
+Pass both the name of the target container and the port mapping to enforce to `portcat`:
+
+    portcat my-awesome-container 3456 4444:8080
+
+That's it! The executable will create a container called `alpine-portcat` which relays the data transfers :)
+
+### Setup portcat manually
+
+The example above is equivalent to the following commands:
+
+    ipAddress=$(docker inspect my-awesome-container | grep IPAddress | grep -o '[0-9]\{1,3\}\(\.[0-9]\{1,3\}\)\{3\}' | head -n 1)
+    docker run -p 3456:3456 -p 4444:8080 --name=alpine-portcat -it pmelegend/portcat:latest $ipAddress 3456 4444:8080
+
 ## Contact me
 
 For support, remarks and requests, please mail me at [pm_engel@icloud.com](mailto:pm_engel@icloud.com).

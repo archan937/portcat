@@ -1,0 +1,4 @@
+#!/bin/bash
+
+curl -sL https://raw.githubusercontent.com/archan937/portcat/master/portcat > /usr/local/bin/portcat
+chmod +x /usr/local/bin/portcat
